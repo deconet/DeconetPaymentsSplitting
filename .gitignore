@@ -1,0 +1,21 @@
+# dependencies
+node_modules/*
+!node_modules/zeppelin-solidity
+
+# production
+build
+
+# coverage reports
+coverage
+coverage.json
+
+# ctags
+tags
+tags.*
+
+# macOS trash
+.DS_Store
+
+# logs
+*.logs
+*.log
