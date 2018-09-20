@@ -21,7 +21,7 @@ contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
      * @dev Constructor for the contract.
      * @param _libraryAddress PaymentsSplitting master-contract address.
      */
-    constructor(address _libraryAddress) {
+    constructor(address _libraryAddress) public {
         libraryAddress = _libraryAddress;
     }
 
