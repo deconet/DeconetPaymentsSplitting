@@ -9,9 +9,9 @@ pragma solidity 0.4.24;
  */
 contract DeconetPaymentsSplitting {
 
-    // Logged when funds landed to or been sent out from this contract balance..
+    // Logged when funds landed to or been sent out from this contract balance.
     event FundsOperation (
-        address sender,
+        address senderOrAddressee,
         uint amount,
         FundsOperationType operationType
     );
@@ -41,19 +41,9 @@ contract DeconetPaymentsSplitting {
      * run postponed distribution and withdraw contract's balance funds.
      */ 
     function () public payable {
-        uint exponent = sharesExponent;
-        require(msg.value >= 10**(exponent + 2));
         emit FundsOperation(msg.sender, msg.value, FundsOperationType.Incoming);
-        uint distributionsCount = distributions.length;
-        if (gasleft() < (2500 * (distributionsCount + 1))) {
-            return;
-        }
-        for (uint i = 0; i < distributionsCount; i++) {
-            Distribution memory distribution = distributions[i];
-            uint amount = calculatePayout(msg.value, distribution.mantissa, exponent);
-            distribution.destination.send(amount);
-            emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
-        }
+        if (gasleft() < 11374 * distributions.length) return;
+        withdrawFullContractBalance();
     }
 
     /**
@@ -84,14 +74,18 @@ contract DeconetPaymentsSplitting {
     /**
      * @dev Process the available balance through the distribution and send money over to destination address.
      */
-    function withdrawFullContractBalance() external {
+    function withdrawFullContractBalance() public {
+        uint distributionsCount = distributions.length;
+        if (gasleft() < 10990 * distributionsCount) return;
         uint balance = address(this).balance;
         uint exponent = sharesExponent;
-        for (uint i = 0; i < distributions.length; i++) {
+        require(balance >= 10**(exponent + 2));
+        for (uint i = 0; i < distributionsCount; i++) {
             Distribution memory distribution = distributions[i];
             uint amount = calculatePayout(balance, distribution.mantissa, exponent);
-            distribution.destination.send(amount);
-            emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
+            if(distribution.destination.send(amount)) {
+                emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
+            }
         }
     }
 
