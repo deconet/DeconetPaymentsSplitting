@@ -42,7 +42,10 @@ contract DeconetPaymentsSplitting {
      */ 
     function () public payable {
         emit FundsOperation(msg.sender, msg.value, FundsOperationType.Incoming);
-        if (gasleft() < 11374 * distributions.length) return;
+        // Distribution happens in a for loop and every iteration requires fixed 10990 of gas to perform
+        // distribution. Also, 1512 of gas is required to call `withdrawFullContractBalance` method and do
+        // some checks and preps in it.
+        if (gasleft() < (10990 * distributions.length + 1512)) return;
         withdrawFullContractBalance();
     }
 

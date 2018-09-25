@@ -9,13 +9,12 @@ The main DeconetPaymentsSplitting contract can accept incoming funds and distrib
 The full contract balance gets distributed every time when new funds land and if there is enough gas to perform the operation. Additionally, somebody can call `withdrawFullContractBalance` method specifically and distribute all available funds between addressees.
 
 Gas consumption statistics for the fallback implementation:
-
-- No distribution fix price – **22959**
-- 1 destination – **34333**
-- 2 destinations – **44567**
-- 3 destinations – **54801**
-- 4 destinations – **65035**
-- 5 destinations – **75269**
+- No distribution fix price – **22965**
+- 1 destination – **34339**
+- 2 destinations – **44573**
+- 3 destinations – **54807**
+- 4 destinations – **65041**
+- 5 destinations – **75275**
 
 Gas consumption for the `withdrawFullContractBalance` method:
 
