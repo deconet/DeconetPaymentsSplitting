@@ -9,11 +9,18 @@ pragma solidity 0.4.24;
  */
 contract DeconetPaymentsSplitting {
 
+    // Logged on this distribution set up completion.
+    event DistributionCreated (
+        address[] destinations,
+        uint[] sharesMantissa,
+        uint sharesExponent
+    );
+
     // Logged when funds landed to or been sent out from this contract balance.
     event FundsOperation (
-        address senderOrAddressee,
+        address indexed senderOrAddressee,
         uint amount,
-        FundsOperationType operationType
+        FundsOperationType indexed operationType
     );
 
     // Enumeration of possible funds operations.
@@ -72,6 +79,7 @@ contract DeconetPaymentsSplitting {
         }
         require(sum == 10**(_sharesExponent + 2)); // taking into account 100% by adding 2 to the exponenta.
         sharesExponent = _sharesExponent;
+        emit DistributionCreated(_destinations, _sharesMantissa, _sharesExponent);
     }
 
     /**
@@ -91,6 +99,7 @@ contract DeconetPaymentsSplitting {
             }
         }
     }
+
 
     /**
      * @dev Calculates a share of the full amount.

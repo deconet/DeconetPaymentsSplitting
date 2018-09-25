@@ -32,7 +32,7 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
 
   it("should set up distribution correctly for the newly deployed contract.", async () => {
     let setUpAndCheckState = async (destinationAddresses, destinationsMantissaOfShare, sharesExponent) => {
-      await paymentsSplitting.setUpDistribution(
+      let txn = await paymentsSplitting.setUpDistribution(
         destinationAddresses,
         destinationsMantissaOfShare,
         sharesExponent,
@@ -51,6 +51,14 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
       }
       let actualSharesExponent = await paymentsSplitting.sharesExponent.call()
       expect(actualSharesExponent.toNumber()).to.be.equal(sharesExponent)
+      expect(txn.logs).to.have.lengthOf(1)
+      let emittedEvent = txn.logs[0]
+      expect(emittedEvent.event).to.be.equal("DistributionCreated")
+      expect(emittedEvent.args.destinations).to.have.ordered.members(destinationAddresses)
+      expect(emittedEvent.args.sharesMantissa.map(x => x.toNumber())).to.have.ordered.members(
+        destinationsMantissaOfShare
+      )
+      expect(emittedEvent.args.sharesExponent.toNumber()).to.be.equal(sharesExponent)
       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
     }
     await setUpAndCheckState([accounts[1], accounts[2], accounts[3], accounts[4]], [3900, 3300, 2155, 645], 2)
@@ -552,7 +560,7 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
 
       var amountInWei = web3.toWei(amountToSendInEth)
       var txnSendingDict = {from: accounts[0], gasPrice: 1, value: amountInWei}
-      txnSendingDict["gas"] = 23000
+      txnSendingDict["gas"] = 23299
       await paymentsSplitting.sendTransaction(txnSendingDict)
       txnSendingDict = {from: accounts[0], gasPrice: 1}
       if(gas) {
