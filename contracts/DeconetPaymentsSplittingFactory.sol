@@ -3,10 +3,11 @@ pragma solidity 0.4.24;
 import "./DeconetPaymentsSplitting.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
+import "../node_modules/openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
 /**
  * @title Clone factory contract for DeconetPaymentsSplitting contract.
- * 
+ *
  * @dev Contract provide convenient way of deploying clones of DeconetPaymentsSplitting contract.
  */
 contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
@@ -46,13 +47,14 @@ contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
     function createPaymentsSplitting(
         address[] _destinations,
         uint[] _sharesMantissa,
+        ERC20[] _destinationTokens,
         uint _sharesExponent
     )
         external
         returns(address)
     {
         address clone = createClone(libraryAddress);
-        DeconetPaymentsSplitting(clone).setUpDistribution(_destinations, _sharesMantissa, _sharesExponent);
+        DeconetPaymentsSplitting(clone).setUpDistribution(_destinations, _sharesMantissa, _destinationTokens, _sharesExponent);
         emit PaymentsSplittingCreated(clone);
         return clone;
     }
