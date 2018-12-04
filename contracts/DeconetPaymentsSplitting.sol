@@ -46,13 +46,13 @@ contract DeconetPaymentsSplitting {
      * by pre-configured shares. In case when there is not enough gas sent for the transaction to complete
      * distribution, all funds will be kept in contract untill somebody calls `withdrawFullContractBalance` to
      * run postponed distribution and withdraw contract's balance funds.
-     */ 
+     */
     function () public payable {
         emit FundsOperation(msg.sender, msg.value, FundsOperationType.Incoming);
         // Distribution happens in a for loop and every iteration requires fixed 10990 of gas to perform
         // distribution. Also, 1512 of gas is required to call `withdrawFullContractBalance` method and do
         // some checks and preps in it.
-        if (gasleft() < (10990 * distributions.length + 1512)) return;
+        // if (gasleft() < (10990 * distributions.length + 1512)) return;
         withdrawFullContractBalance();
     }
 
@@ -87,7 +87,7 @@ contract DeconetPaymentsSplitting {
      */
     function withdrawFullContractBalance() public {
         uint distributionsCount = distributions.length;
-        if (gasleft() < 10990 * distributionsCount) return;
+        // if (gasleft() < 10990 * distributionsCount) return;
         uint balance = address(this).balance;
         uint exponent = sharesExponent;
         require(balance >= 10**(exponent + 2));

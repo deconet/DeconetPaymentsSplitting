@@ -6,7 +6,7 @@ import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
 
 /**
  * @title Clone factory contract for DeconetPaymentsSplitting contract.
- * 
+ *
  * @dev Contract provide convenient way of deploying clones of DeconetPaymentsSplitting contract.
  */
 contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
