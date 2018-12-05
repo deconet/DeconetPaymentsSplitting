@@ -71,7 +71,7 @@ contract DeconetPaymentsSplitting {
         external
     {
         require(distributions.length == 0); // Make sure the clone isn't initialized yet.
-        require(_destinations.length <= 5 && _destinations.length > 0);
+        require(_destinations.length <= 8 && _destinations.length > 0);
         uint sum = 0;
         for (uint i = 0; i < _destinations.length; i++) {
             sum += _sharesMantissa[i];

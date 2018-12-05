@@ -1,6 +1,17 @@
 var HDWalletProvider = require('truffle-hdwallet-provider')
+const LedgerWalletProvider = require('truffle-ledger-provider');
+
 // matching address is 0x648d692e5c507c233d0f9d9fea062429003b3144
 let mnemonic = process.env.DECONET_BLOCKCHAIN_ROPSTEN_MNEMONIC
+
+const ledgerOptions = {
+  networkId: 1,
+  path: "44'/60'/0'/0",
+  askConfirm: false,
+  accountsLength: 1,
+  accountsOffset: 0,
+};
+
 module.exports = {
   networks: {
     development: {
@@ -25,6 +36,16 @@ module.exports = {
       },
       network_id: 4,
       gas: 4700000
+    },
+    mainnet: {
+      provider: function() {
+        // return new LedgerWalletProvider(ledgerOptions, 'http://18.208.64.51:8545')
+        // return new LedgerWalletProvider(ledgerOptions, "https://rapidly-renewed-buzzard.quiknode.io")
+        return new LedgerWalletProvider(ledgerOptions, "https://mainnet.infura.io/JTdaA5dJvlwfCfdgT5Cm")
+      },
+      network_id: 1,
+      gas: 3000000,
+      gasPrice: 5000000000 // 5 gwei
     },
     coverage: {
       host: "127.0.0.1",

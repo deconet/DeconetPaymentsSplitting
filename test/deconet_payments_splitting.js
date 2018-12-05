@@ -136,7 +136,7 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
     )
   })
 
-  it("should fail setting up distribution with >5 destinations for the newly deployed contract.", async () => {
+  it("should fail setting up distribution with >8 destinations for the newly deployed contract.", async () => {
     let setUpAndCheckState = async (destinationAddresses, destinationsMantissaOfShare, sharesExponent) => {
       await paymentsSplitting.setUpDistribution(
         destinationAddresses,
@@ -158,13 +158,13 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
     }
 
     await setUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6]],
+      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7], accounts[8], accounts[9]],
       [39000, 31000, 21550, 6450, 1001, 909],
       2
     )
 
     await setUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
+      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7], accounts[8], accounts[9], accounts[10], accounts[11]],
       [39000, 11000, 20000, 21550, 6450, 1001, 909],
       2
     )
