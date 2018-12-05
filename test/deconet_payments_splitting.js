@@ -240,75 +240,76 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
     )
   })
 
-  it(
-    "should accept incoming payments and keep funds in contract balance if there is not enough gas.",
-    async () => {
-      let setUpTopUpAndCheckState = async (
-        destinationAddresses,
-        destinationsMantissaOfShare,
-        sharesExponent,
-        amountToSendInEth,
-        gas
-      ) => {
-        await paymentsSplitting.setUpDistribution(
-          destinationAddresses,
-          destinationsMantissaOfShare,
-          sharesExponent,
-          {from: accounts[0], gasPrice: 1}
-        )
+  // commented this test out because this functionality has been removed for now
+  // it(
+  //   "should accept incoming payments and keep funds in contract balance if there is not enough gas.",
+  //   async () => {
+  //     let setUpTopUpAndCheckState = async (
+  //       destinationAddresses,
+  //       destinationsMantissaOfShare,
+  //       sharesExponent,
+  //       amountToSendInEth,
+  //       gas
+  //     ) => {
+  //       await paymentsSplitting.setUpDistribution(
+  //         destinationAddresses,
+  //         destinationsMantissaOfShare,
+  //         sharesExponent,
+  //         {from: accounts[0], gasPrice: 1}
+  //       )
 
-        var amountInWei = web3.toWei(amountToSendInEth)
-        var initialBalance = await web3.eth.getBalance(paymentsSplitting.address)
-        var initialDestinationBalances = {}
-        for (var i = 0; i < destinationAddresses.length; i++) {
-          initialDestinationBalances[destinationAddresses[i]] = await web3.eth.getBalance(destinationAddresses[i])
-        }
-        var txn = await paymentsSplitting.sendTransaction(
-          {from: accounts[0], gasPrice: 1, gas: gas, value: amountInWei}
-        )
-        expect(txn.logs).to.have.lengthOf(1)
-        var incomingTxnEvent = new FundsOperationEvent(txn.logs[0])
-        incomingTxnEvent.validate("FundsOperation", accounts[0], new BigNumber(amountInWei), new BigNumber(0))
-        var actualBalance = await web3.eth.getBalance(paymentsSplitting.address)
-        for (var i = 0; i < destinationAddresses.length; i++) {
-          actualBalanceOfDestination = await web3.eth.getBalance(destinationAddresses[i])
-          expect(actualBalanceOfDestination.toString()).to.be.equal(
-            initialDestinationBalances[destinationAddresses[i]].toString()
-          )
-        }
-        expect(actualBalance.toString()).to.be.equal(initialBalance.plus(amountInWei).toString())
-        paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
-      }
-      await setUpTopUpAndCheckState(
-        [accounts[1], accounts[2], accounts[3], accounts[4]],
-        [3900, 3300, 2155, 645],
-        2,
-        0.2,
-        25500
-      )
-      await setUpTopUpAndCheckState(
-        [accounts[1], accounts[2], accounts[3], accounts[4]],
-        [39000, 33000, 21549, 6451],
-        3,
-        0.1,
-        25000
-      )
-      await setUpTopUpAndCheckState(
-        [accounts[1], accounts[2], accounts[3]],
-        [39, 33, 28],
-        0,
-        0.01,
-        30000
-      )
-      await setUpTopUpAndCheckState(
-        [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
-        [390, 330, 120, 135, 25],
-        1,
-        0.004,
-        35000
-      )
-    }
-  )
+  //       var amountInWei = web3.toWei(amountToSendInEth)
+  //       var initialBalance = await web3.eth.getBalance(paymentsSplitting.address)
+  //       var initialDestinationBalances = {}
+  //       for (var i = 0; i < destinationAddresses.length; i++) {
+  //         initialDestinationBalances[destinationAddresses[i]] = await web3.eth.getBalance(destinationAddresses[i])
+  //       }
+  //       var txn = await paymentsSplitting.sendTransaction(
+  //         {from: accounts[0], gasPrice: 1, gas: gas, value: amountInWei}
+  //       )
+  //       expect(txn.logs).to.have.lengthOf(1)
+  //       var incomingTxnEvent = new FundsOperationEvent(txn.logs[0])
+  //       incomingTxnEvent.validate("FundsOperation", accounts[0], new BigNumber(amountInWei), new BigNumber(0))
+  //       var actualBalance = await web3.eth.getBalance(paymentsSplitting.address)
+  //       for (var i = 0; i < destinationAddresses.length; i++) {
+  //         actualBalanceOfDestination = await web3.eth.getBalance(destinationAddresses[i])
+  //         expect(actualBalanceOfDestination.toString()).to.be.equal(
+  //           initialDestinationBalances[destinationAddresses[i]].toString()
+  //         )
+  //       }
+  //       expect(actualBalance.toString()).to.be.equal(initialBalance.plus(amountInWei).toString())
+  //       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
+  //     }
+  //     await setUpTopUpAndCheckState(
+  //       [accounts[1], accounts[2], accounts[3], accounts[4]],
+  //       [3900, 3300, 2155, 645],
+  //       2,
+  //       0.2,
+  //       25500
+  //     )
+  //     await setUpTopUpAndCheckState(
+  //       [accounts[1], accounts[2], accounts[3], accounts[4]],
+  //       [39000, 33000, 21549, 6451],
+  //       3,
+  //       0.1,
+  //       25000
+  //     )
+  //     await setUpTopUpAndCheckState(
+  //       [accounts[1], accounts[2], accounts[3]],
+  //       [39, 33, 28],
+  //       0,
+  //       0.01,
+  //       30000
+  //     )
+  //     await setUpTopUpAndCheckState(
+  //       [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
+  //       [390, 330, 120, 135, 25],
+  //       1,
+  //       0.004,
+  //       35000
+  //     )
+  //   }
+  // )
 
   it("should fail accepting incoming payments if amount is lower than needed amount for doing math", async () => {
     let setUpTopUpAndCheckState = async (
@@ -374,94 +375,161 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
     )
   })
 
-  it("should process incoming payments as usually if transfering to some address fails.", async () => {
+  // commented out becauser this functionality has been removed
+  // it("should process incoming payments as usually if transfering to some address fails.", async () => {
+  //   var factoryContract = await DeconetPaymentsSplittingFactory.deployed()
+  //   var invalidDestinationAddress = factoryContract.address
+  //   let setUpTopUpAndCheckState = async (
+  //     destinationAddresses,
+  //     destinationsMantissaOfShare,
+  //     sharesExponent,
+  //     amountToSendInWei
+  //   ) => {
+  //     await paymentsSplitting.setUpDistribution(
+  //       destinationAddresses,
+  //       destinationsMantissaOfShare,
+  //       sharesExponent,
+  //       {from: accounts[0], gasPrice: 1}
+  //     )
+
+  //     var initialBalance = await web3.eth.getBalance(paymentsSplitting.address)
+  //     var initialDestinationBalances = {}
+  //     for (var i = 0; i < destinationAddresses.length; i++) {
+  //       initialDestinationBalances[destinationAddresses[i]] = await web3.eth.getBalance(destinationAddresses[i])
+  //     }
+  //     var txn = await paymentsSplitting.sendTransaction({from: accounts[0], gasPrice: 1, value: amountToSendInWei})
+  //     var actualBalance = await web3.eth.getBalance(paymentsSplitting.address)
+
+  //     var incomingTxnEvent = new FundsOperationEvent(txn.logs[0])
+  //     incomingTxnEvent.validate("FundsOperation", accounts[0], new BigNumber(amountToSendInWei), new BigNumber(0))
+  //     var eventsIndex = 1
+  //     var resultingLeftInContractBalanceAmount = new BigNumber(0)
+  //     for (var i = 0; i < destinationAddresses.length; i++) {
+  //       actualBalanceOfDestination = await web3.eth.getBalance(destinationAddresses[i])
+  //       expectedSentAmount = (new BigNumber(amountToSendInWei))
+  //         .times(new BigNumber(destinationsMantissaOfShare[i]))
+  //         .div((new BigNumber(10)).pow(sharesExponent + 2))
+  //       if(destinationAddresses[i] == invalidDestinationAddress) {
+  //         expect(actualBalanceOfDestination.toString()).to.be.equal(
+  //           initialDestinationBalances[destinationAddresses[i]].toString()
+  //         )
+  //         resultingLeftInContractBalanceAmount = resultingLeftInContractBalanceAmount.plus(expectedSentAmount)
+  //       } else {
+  //         expect(actualBalanceOfDestination.toString()).to.be.equal(
+  //           initialDestinationBalances[destinationAddresses[i]].plus(expectedSentAmount).toString()
+  //         )
+
+  //         var event = new FundsOperationEvent(txn.logs[eventsIndex++])
+  //         event.validate("FundsOperation", destinationAddresses[i], expectedSentAmount, new BigNumber(1))
+  //       }
+  //     }
+
+  //     expect(actualBalance.toString()).to.be.equal(
+  //       initialBalance.plus(resultingLeftInContractBalanceAmount).toString()
+  //     )
+  //     paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
+  //   }
+  //   await setUpTopUpAndCheckState(
+  //     [invalidDestinationAddress, accounts[2], accounts[3], accounts[4]],
+  //     [3900, 3300, 2155, 645],
+  //     2,
+  //     20000000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], invalidDestinationAddress, invalidDestinationAddress],
+  //     [39000, 33000, 21549, 6451],
+  //     3,
+  //     100000000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], invalidDestinationAddress, accounts[3]],
+  //     [39, 33, 28],
+  //     0,
+  //     9900000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], invalidDestinationAddress, accounts[3]],
+  //     [39, 33, 28],
+  //     0,
+  //     9900000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [invalidDestinationAddress, invalidDestinationAddress, invalidDestinationAddress],
+  //     [39, 33, 28],
+  //     0,
+  //     9900000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], accounts[3], accounts[4], invalidDestinationAddress],
+  //     [390, 330, 120, 135, 25],
+  //     1,
+  //     999000000
+  //   )
+  // })
+
+
+  it("should prevent setting a contract address as a destination", async () => {
     var factoryContract = await DeconetPaymentsSplittingFactory.deployed()
     var invalidDestinationAddress = factoryContract.address
-    let setUpTopUpAndCheckState = async (
+
+    let setUpDistributionAndCheckSuccess = async (
       destinationAddresses,
       destinationsMantissaOfShare,
       sharesExponent,
-      amountToSendInWei
+      shouldCreateException
     ) => {
-      await paymentsSplitting.setUpDistribution(
-        destinationAddresses,
-        destinationsMantissaOfShare,
-        sharesExponent,
-        {from: accounts[0], gasPrice: 1}
-      )
-
-      var initialBalance = await web3.eth.getBalance(paymentsSplitting.address)
-      var initialDestinationBalances = {}
-      for (var i = 0; i < destinationAddresses.length; i++) {
-        initialDestinationBalances[destinationAddresses[i]] = await web3.eth.getBalance(destinationAddresses[i])
-      }
-      var txn = await paymentsSplitting.sendTransaction({from: accounts[0], gasPrice: 1, value: amountToSendInWei})
-      var actualBalance = await web3.eth.getBalance(paymentsSplitting.address)
-
-      var incomingTxnEvent = new FundsOperationEvent(txn.logs[0])
-      incomingTxnEvent.validate("FundsOperation", accounts[0], new BigNumber(amountToSendInWei), new BigNumber(0))
-      var eventsIndex = 1
-      var resultingLeftInContractBalanceAmount = new BigNumber(0)
-      for (var i = 0; i < destinationAddresses.length; i++) {
-        actualBalanceOfDestination = await web3.eth.getBalance(destinationAddresses[i])
-        expectedSentAmount = (new BigNumber(amountToSendInWei))
-          .times(new BigNumber(destinationsMantissaOfShare[i]))
-          .div((new BigNumber(10)).pow(sharesExponent + 2))
-        if(destinationAddresses[i] == invalidDestinationAddress) {
-          expect(actualBalanceOfDestination.toString()).to.be.equal(
-            initialDestinationBalances[destinationAddresses[i]].toString()
-          )
-          resultingLeftInContractBalanceAmount = resultingLeftInContractBalanceAmount.plus(expectedSentAmount)
-        } else {
-          expect(actualBalanceOfDestination.toString()).to.be.equal(
-            initialDestinationBalances[destinationAddresses[i]].plus(expectedSentAmount).toString()
-          )
-
-          var event = new FundsOperationEvent(txn.logs[eventsIndex++])
-          event.validate("FundsOperation", destinationAddresses[i], expectedSentAmount, new BigNumber(1))
-        }
+      let exceptionOccured = false
+      try {
+        await paymentsSplitting.setUpDistribution(
+          destinationAddresses,
+          destinationsMantissaOfShare,
+          sharesExponent,
+          {from: accounts[0], gasPrice: 1}
+        )
+      } catch {
+        exceptionOccured = true;
       }
 
-      expect(actualBalance.toString()).to.be.equal(
-        initialBalance.plus(resultingLeftInContractBalanceAmount).toString()
-      )
+      expect(exceptionOccured).to.be.equal(shouldCreateException)
+
       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
     }
-    await setUpTopUpAndCheckState(
+
+    await setUpDistributionAndCheckSuccess(
       [invalidDestinationAddress, accounts[2], accounts[3], accounts[4]],
       [3900, 3300, 2155, 645],
       2,
-      20000000
+      true
     )
-    await setUpTopUpAndCheckState(
+    await setUpDistributionAndCheckSuccess(
       [accounts[1], accounts[2], invalidDestinationAddress, invalidDestinationAddress],
       [39000, 33000, 21549, 6451],
       3,
-      100000000
+      true
     )
-    await setUpTopUpAndCheckState(
+    await setUpDistributionAndCheckSuccess(
+      [accounts[1], accounts[2], accounts[3]],
+      [39, 33, 28],
+      0,
+      false
+    )
+    await setUpDistributionAndCheckSuccess(
       [accounts[1], invalidDestinationAddress, accounts[3]],
       [39, 33, 28],
       0,
-      9900000
+      true
     )
-    await setUpTopUpAndCheckState(
-      [accounts[1], invalidDestinationAddress, accounts[3]],
-      [39, 33, 28],
-      0,
-      9900000
-    )
-    await setUpTopUpAndCheckState(
+    await setUpDistributionAndCheckSuccess(
       [invalidDestinationAddress, invalidDestinationAddress, invalidDestinationAddress],
       [39, 33, 28],
       0,
-      9900000
+      true
     )
-    await setUpTopUpAndCheckState(
+    await setUpDistributionAndCheckSuccess(
       [accounts[1], accounts[2], accounts[3], accounts[4], invalidDestinationAddress],
       [390, 330, 120, 135, 25],
       1,
-      999000000
+      true
     )
   })
 
@@ -471,7 +539,8 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
       destinationsMantissaOfShare,
       sharesExponent,
       amountToSendInEth,
-      gas
+      gas,
+      shouldCreateException
     ) => {
       await paymentsSplitting.setUpDistribution(
         destinationAddresses,
@@ -485,89 +554,15 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
       if(gas) {
         txnSendingDict["gas"] = gas
       }
-      var txn = await paymentsSplitting.sendTransaction(txnSendingDict)
-      console.log(`${txn.logs.length == 1 ? "Not distributed" : "Distributed"}. ${destinationAddresses.length} destinations – ${txn.receipt.gasUsed} gas used.`)
 
-      paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
-    }
-    await setUpTopUpAndCheckState(
-      [accounts[10]],
-      [10000],
-      2,
-      0.0002
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2]],
-      [5000, 5000],
-      2,
-      0.2
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3]],
-      [39, 33, 28],
-      0,
-      0.01
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4]],
-      [39000, 33000, 21549, 6451],
-      3,
-      0.1
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
-      [390, 330, 120, 135, 25],
-      1,
-      0.004
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[10]],
-      [10000],
-      2,
-      0.0002,
-      25000
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2]],
-      [5000, 5000],
-      2,
-      0.2,
-      25000
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
-      [390, 330, 120, 135, 25],
-      1,
-      0.004,
-      30000
-    )
-  })
-
-  it("tests gas usage of distributions' transfers via `withdrawFullContractBalance` method.", async () => {
-    let setUpTopUpAndCheckState = async (
-      destinationAddresses,
-      destinationsMantissaOfShare,
-      sharesExponent,
-      amountToSendInEth,
-      gas
-    ) => {
-      await paymentsSplitting.setUpDistribution(
-        destinationAddresses,
-        destinationsMantissaOfShare,
-        sharesExponent,
-        {from: accounts[0], gasPrice: 1}
-      )
-
-      var amountInWei = web3.toWei(amountToSendInEth)
-      var txnSendingDict = {from: accounts[0], gasPrice: 1, value: amountInWei}
-      txnSendingDict["gas"] = 23299
-      await paymentsSplitting.sendTransaction(txnSendingDict)
-      txnSendingDict = {from: accounts[0], gasPrice: 1}
-      if(gas) {
-        txnSendingDict["gas"] = gas
+      let exceptionOccured = false
+      try {
+        var txn = await paymentsSplitting.sendTransaction(txnSendingDict)
+      } catch {
+        exceptionOccured = true
       }
-      var txn = await paymentsSplitting.withdrawFullContractBalance(txnSendingDict)
-      console.log(`${destinationAddresses.length} destinations – ${txn.receipt.gasUsed} gas used.`)
+
+      expect(exceptionOccured).to.be.equal(shouldCreateException)
 
       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
     }
@@ -575,53 +570,156 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
       [accounts[10]],
       [10000],
       2,
-      0.0002
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2]],
-      [5000, 5000],
-      2,
-      0.2
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3]],
-      [39, 33, 28],
-      0,
-      0.01
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4]],
-      [39000, 33000, 21549, 6451],
-      3,
-      0.1
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
-      [390, 330, 120, 135, 25],
-      1,
-      0.004
-    )
-    await setUpTopUpAndCheckState(
-      [accounts[10]],
-      [10000],
-      2,
       0.0002,
-      25000
+      null,
+      false
     )
     await setUpTopUpAndCheckState(
       [accounts[1], accounts[2]],
       [5000, 5000],
       2,
       0.2,
-      25000
+      null,
+      false
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[1], accounts[2], accounts[3]],
+      [39, 33, 28],
+      0,
+      0.01,
+      null,
+      false
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[1], accounts[2], accounts[3], accounts[4]],
+      [39000, 33000, 21549, 6451],
+      3,
+      0.1,
+      null,
+      false
     )
     await setUpTopUpAndCheckState(
       [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
       [390, 330, 120, 135, 25],
       1,
       0.004,
-      30000
+      null,
+      false
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[1], accounts[2], accounts[3], accounts[4]],
+      [390, 330, 120, 160],
+      1,
+      0.004,
+      200000,
+      false
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[10]],
+      [10000],
+      2,
+      0.0002,
+      25000,
+      true
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[1], accounts[2]],
+      [5000, 5000],
+      2,
+      0.2,
+      25000,
+      true
+    )
+    await setUpTopUpAndCheckState(
+      [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
+      [390, 330, 120, 135, 25],
+      1,
+      0.004,
+      30000,
+      true
     )
   })
+
+  // commented out because this functionality has been removed for now
+  // it("tests gas usage of distributions' transfers via `withdrawFullContractBalance` method.", async () => {
+  //   let setUpTopUpAndCheckState = async (
+  //     destinationAddresses,
+  //     destinationsMantissaOfShare,
+  //     sharesExponent,
+  //     amountToSendInEth,
+  //     gas
+  //   ) => {
+  //     await paymentsSplitting.setUpDistribution(
+  //       destinationAddresses,
+  //       destinationsMantissaOfShare,
+  //       sharesExponent,
+  //       {from: accounts[0], gasPrice: 1}
+  //     )
+
+  //     var amountInWei = web3.toWei(amountToSendInEth)
+  //     var txnSendingDict = {from: accounts[0], gasPrice: 1, value: amountInWei}
+  //     txnSendingDict["gas"] = 23299
+  //     await paymentsSplitting.sendTransaction(txnSendingDict)
+  //     txnSendingDict = {from: accounts[0], gasPrice: 1}
+  //     if(gas) {
+  //       txnSendingDict["gas"] = gas
+  //     }
+  //     var txn = await paymentsSplitting.withdrawFullContractBalance(txnSendingDict)
+  //     console.log(`${destinationAddresses.length} destinations – ${txn.receipt.gasUsed} gas used.`)
+
+  //     paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
+  //   }
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[10]],
+  //     [10000],
+  //     2,
+  //     0.0002
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2]],
+  //     [5000, 5000],
+  //     2,
+  //     0.2
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], accounts[3]],
+  //     [39, 33, 28],
+  //     0,
+  //     0.01
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], accounts[3], accounts[4]],
+  //     [39000, 33000, 21549, 6451],
+  //     3,
+  //     0.1
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
+  //     [390, 330, 120, 135, 25],
+  //     1,
+  //     0.004
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[10]],
+  //     [10000],
+  //     2,
+  //     0.0002,
+  //     25000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2]],
+  //     [5000, 5000],
+  //     2,
+  //     0.2,
+  //     25000
+  //   )
+  //   await setUpTopUpAndCheckState(
+  //     [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
+  //     [390, 330, 120, 135, 25],
+  //     1,
+  //     0.004,
+  //     30000
+  //   )
+  // })
 })
 
