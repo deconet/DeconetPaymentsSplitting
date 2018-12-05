@@ -478,19 +478,23 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
       sharesExponent,
       shouldCreateException
     ) => {
-      let exceptionOccured = false
-      try {
-        await paymentsSplitting.setUpDistribution(
-          destinationAddresses,
-          destinationsMantissaOfShare,
-          sharesExponent,
-          {from: accounts[0], gasPrice: 1}
-        )
-      } catch {
-        exceptionOccured = true;
-      }
-
-      expect(exceptionOccured).to.be.equal(shouldCreateException)
+      await paymentsSplitting.setUpDistribution(
+        destinationAddresses,
+        destinationsMantissaOfShare,
+        sharesExponent,
+        {from: accounts[0], gasPrice: 1}
+      ).catch(async (err) => {
+        if (!shouldCreateException) {
+          assert.fail("Unexpected exception.")
+        }
+        assert.isOk(err, "Expected exception.")
+      }).then(async (txn) => {
+        if(txn) {
+          if (shouldCreateException) {
+            assert.fail("Should have failed above.")
+          }
+        }
+      })
 
       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
     }
@@ -555,14 +559,18 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         txnSendingDict["gas"] = gas
       }
 
-      let exceptionOccured = false
-      try {
-        var txn = await paymentsSplitting.sendTransaction(txnSendingDict)
-      } catch {
-        exceptionOccured = true
-      }
-
-      expect(exceptionOccured).to.be.equal(shouldCreateException)
+      await paymentsSplitting.sendTransaction(txnSendingDict).catch(async (err) => {
+        if (!shouldCreateException) {
+          assert.fail("Unexpected exception.")
+        }
+        assert.isOk(err, "Expected exception.")
+      }).then(async (txn) => {
+        if(txn) {
+          if (shouldCreateException) {
+            assert.fail("Should have failed above.")
+          }
+        }
+      })
 
       paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
     }
