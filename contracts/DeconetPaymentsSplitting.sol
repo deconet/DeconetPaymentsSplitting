@@ -117,7 +117,7 @@ contract DeconetPaymentsSplitting {
      * @param _addr The address to check
      * @return A boolean indicating whether or not the address is a contract
      */
-    function isContract(address _addr) private returns (bool) {
+    function isContract(address _addr) private view returns (bool) {
         uint32 size;
         assembly {
             size := extcodesize(_addr)
