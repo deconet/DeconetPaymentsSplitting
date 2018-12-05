@@ -74,6 +74,7 @@ contract DeconetPaymentsSplitting {
         require(_destinations.length <= 8 && _destinations.length > 0);
         uint sum = 0;
         for (uint i = 0; i < _destinations.length; i++) {
+            require(!isContract(_destinations[i])); // Forbid contract as destination so that transfer can never fail
             sum += _sharesMantissa[i];
             distributions.push(Distribution(_destinations[i], _sharesMantissa[i]));
         }
@@ -109,5 +110,18 @@ contract DeconetPaymentsSplitting {
      */
     function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) public pure returns(uint) {
         return (_fullAmount / (10 ** (_shareExponent + 2))) * _shareMantissa;
+    }
+
+    /**
+     * @dev Checks whether or not a given address contains a contract
+     * @param _addr The address to check
+     * @return A boolean indicating whether or not the address is a contract
+     */
+    function isContract(address _addr) private returns (bool) {
+        uint32 size;
+        assembly {
+            size := extcodesize(_addr)
+        }
+        return (size > 0);
     }
 }
