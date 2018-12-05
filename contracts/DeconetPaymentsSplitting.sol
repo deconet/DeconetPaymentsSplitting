@@ -94,9 +94,8 @@ contract DeconetPaymentsSplitting {
         for (uint i = 0; i < distributionsCount; i++) {
             Distribution memory distribution = distributions[i];
             uint amount = calculatePayout(balance, distribution.mantissa, exponent);
-            if(distribution.destination.send(amount)) {
-                emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
-            }
+            distribution.destination.transfer(amount);
+            emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
         }
     }
 
