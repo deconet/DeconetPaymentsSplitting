@@ -69,21 +69,23 @@ contract DeconetPaymentsSplitting {
     )
         external
     {
-        require(distributions.length == 0); // Make sure the clone isn't initialized yet.
-        require(_destinations.length <= 8 && _destinations.length > 0);  // max of 8 destinations
+        require(distributions.length == 0, "Contract can only be initialized once"); // Make sure the clone isn't initialized yet.
+        require(_destinations.length <= 8 && _destinations.length > 0, "There is a maximum of 8 destinations allowed");  // max of 8 destinations
         // prevent integer overflow when math with _sharesExponent happens
         // also ensures that low balances can be distributed because balance must always be >= 10**(sharesExponent + 2)
-        require(_sharesExponent <= 4);
+        require(_sharesExponent <= 4, "The maximum allowed sharesExponent is 4");
         // ensure that lengths of arrays match so array out of bounds can't happen
-        require(_destinations.length == _sharesMantissa.length);
+        require(_destinations.length == _sharesMantissa.length, "Length of destinations does not match length of sharesMantissa");
 
         uint sum = 0;
         for (uint i = 0; i < _destinations.length; i++) {
-            require(!isContract(_destinations[i])); // Forbid contract as destination so that transfer can never fail
+            // Forbid contract as destination so that transfer can never fail
+            require(!isContract(_destinations[i]), "A contract may not be a destination address");
             sum = sum.add(_sharesMantissa[i]);
             distributions.push(Distribution(_destinations[i], _sharesMantissa[i]));
         }
-        require(sum == 10**(_sharesExponent.add(2))); // taking into account 100% by adding 2 to the exponent.
+         // taking into account 100% by adding 2 to the exponent.
+        require(sum == 10**(_sharesExponent.add(2)), "The sum of all sharesMantissa should equal 10 ** ( _sharesExponent + 2 ) but it does not.");
         sharesExponent = _sharesExponent;
         emit DistributionCreated(_destinations, _sharesMantissa, _sharesExponent);
     }
@@ -93,7 +95,7 @@ contract DeconetPaymentsSplitting {
      */
     function distributeFunds() public {
         uint balance = address(this).balance;
-        require(balance >= 10**(sharesExponent.add(2)));
+        require(balance >= 10**(sharesExponent.add(2)), "You can not split up less wei than sum of all shares");
         for (uint i = 0; i < distributions.length; i++) {
             Distribution memory distribution = distributions[i];
             uint amount = calculatePayout(balance, distribution.mantissa, sharesExponent);
