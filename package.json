@@ -30,14 +30,14 @@
     "openzeppelin-solidity": "1.12.0",
     "solc": "^0.4.25",
     "truffle-contract": "^3.0.4",
-    "truffle-hdwallet-provider": "0.0.6",
+    "truffle-hdwallet-provider": "^1.0.0-web3one.1",
     "truffle-ledger-provider": "../truffle-ledger-provider",
     "uuid": "^3.2.1",
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
-    "solidity-coverage": "^0.5.11",
     "ganache-cli": "6.1.8",
+    "solidity-coverage": "^0.5.11",
     "truffle": "beta"
   }
 }
