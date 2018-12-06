@@ -1,5 +1,7 @@
 pragma solidity 0.4.24;
 
+import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+
 
 /**
  * @title Payments Splitting contract.
@@ -8,6 +10,7 @@ pragma solidity 0.4.24;
  * distribution funds by preconfigured rules.
  */
 contract DeconetPaymentsSplitting {
+    using SafeMath for uint;
 
     // Logged on this distribution set up completion.
     event DistributionCreated (
@@ -67,11 +70,17 @@ contract DeconetPaymentsSplitting {
         external
     {
         require(distributions.length == 0); // Make sure the clone isn't initialized yet.
-        require(_destinations.length <= 8 && _destinations.length > 0);
+        require(_destinations.length <= 8 && _destinations.length > 0);  // max of 8 destinations
+        // prevent integer overflow when math with _sharesExponent happens
+        // also ensures that low balances can be distributed because balance must always be >= 10**(sharesExponent + 2)
+        require(_sharesExponent <= 4);
+        // ensure that lengths of arrays match so array out of bounds can't happen
+        require(_destinations.length == _sharesMantissa.length);
+
         uint sum = 0;
         for (uint i = 0; i < _destinations.length; i++) {
             require(!isContract(_destinations[i])); // Forbid contract as destination so that transfer can never fail
-            sum += _sharesMantissa[i];
+            sum = sum.add(_sharesMantissa[i]);
             distributions.push(Distribution(_destinations[i], _sharesMantissa[i]));
         }
         require(sum == 10**(_sharesExponent + 2)); // taking into account 100% by adding 2 to the exponent.
@@ -84,11 +93,10 @@ contract DeconetPaymentsSplitting {
      */
     function distributeFunds() public {
         uint balance = address(this).balance;
-        uint exponent = sharesExponent;
-        require(balance >= 10**(exponent + 2));
+        require(balance >= 10**(sharesExponent + 2));
         for (uint i = 0; i < distributions.length; i++) {
             Distribution memory distribution = distributions[i];
-            uint amount = calculatePayout(balance, distribution.mantissa, exponent);
+            uint amount = calculatePayout(balance, distribution.mantissa, sharesExponent);
             distribution.destination.transfer(amount);
             emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
         }
@@ -103,7 +111,7 @@ contract DeconetPaymentsSplitting {
      * @return An uint of the payout.
      */
     function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) public pure returns(uint) {
-        return (_fullAmount / (10 ** (_shareExponent + 2))) * _shareMantissa;
+        return (_fullAmount.div(10 ** (_shareExponent + 2))).mul(_shareMantissa);
     }
 
     /**
