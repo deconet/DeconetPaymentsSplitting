@@ -83,7 +83,7 @@ contract DeconetPaymentsSplitting {
             sum = sum.add(_sharesMantissa[i]);
             distributions.push(Distribution(_destinations[i], _sharesMantissa[i]));
         }
-        require(sum == 10**(_sharesExponent + 2)); // taking into account 100% by adding 2 to the exponent.
+        require(sum == 10**(_sharesExponent.add(2))); // taking into account 100% by adding 2 to the exponent.
         sharesExponent = _sharesExponent;
         emit DistributionCreated(_destinations, _sharesMantissa, _sharesExponent);
     }
@@ -93,7 +93,7 @@ contract DeconetPaymentsSplitting {
      */
     function distributeFunds() public {
         uint balance = address(this).balance;
-        require(balance >= 10**(sharesExponent + 2));
+        require(balance >= 10**(sharesExponent.add(2)));
         for (uint i = 0; i < distributions.length; i++) {
             Distribution memory distribution = distributions[i];
             uint amount = calculatePayout(balance, distribution.mantissa, sharesExponent);
@@ -111,7 +111,7 @@ contract DeconetPaymentsSplitting {
      * @return An uint of the payout.
      */
     function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) public pure returns(uint) {
-        return (_fullAmount.div(10 ** (_shareExponent + 2))).mul(_shareMantissa);
+        return (_fullAmount.div(10 ** (_shareExponent.add(2)))).mul(_shareMantissa);
     }
 
     /**
