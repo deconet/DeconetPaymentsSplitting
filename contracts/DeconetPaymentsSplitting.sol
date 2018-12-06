@@ -120,7 +120,7 @@ contract DeconetPaymentsSplitting {
      * @param _shareExponent Exponent of the percentage floating-point number.
      * @return An uint of the payout.
      */
-    function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) public pure returns(uint) {
+    function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) private pure returns(uint) {
         return (_fullAmount.div(10 ** (_shareExponent.add(2)))).mul(_shareMantissa);
     }
 
