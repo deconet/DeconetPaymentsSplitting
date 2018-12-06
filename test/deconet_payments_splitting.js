@@ -39,15 +39,10 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         {from: accounts[0], gasPrice: 1}
       )
 
-      for (var i = 0; i <= destinationAddresses.length; i++) {
+      for (var i = 0; i < destinationAddresses.length; i++) {
         let actualDistribution = await paymentsSplitting.distributions.call(i)
-        if(i == destinationAddresses.length) {
-          expect(actualDistribution[0]).to.be.equal('0x0')
-          expect(actualDistribution[1].toNumber()).to.be.equal(0)
-        } else {
-          expect(actualDistribution[0]).to.be.equal(destinationAddresses[i])
-          expect(actualDistribution[1].toNumber()).to.be.equal(destinationsMantissaOfShare[i])
-        }
+        expect(actualDistribution[0]).to.be.equal(destinationAddresses[i])
+        expect(actualDistribution[1].toNumber()).to.be.equal(destinationsMantissaOfShare[i])
       }
       let actualSharesExponent = await paymentsSplitting.sharesExponent.call()
       expect(actualSharesExponent.toNumber()).to.be.equal(sharesExponent)
@@ -88,9 +83,8 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         {from: accounts[0], gasPrice: 1}
       ).catch(async (err) => {
         assert.isOk(err, "Expected fail.")
-        let actualDistribution = await paymentsSplitting.distributions.call(0)
-        expect(actualDistribution[0]).to.be.equal('0x0')
-        expect(actualDistribution[1].toNumber()).to.be.equal(0)
+        let actualDistributionLength = await paymentsSplitting.distributionsLength()
+        expect(actualDistributionLength.toString()).to.be.equal('0')
         let actualSharesExponent = await paymentsSplitting.sharesExponent.call()
         expect(actualSharesExponent.toNumber()).to.be.equal(0)
       }).then(async (txn) => {
@@ -169,9 +163,8 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         {from: accounts[0], gasPrice: 1}
       ).catch(async (err) => {
         assert.isOk(err, "Expected fail.")
-        let actualDistribution = await paymentsSplitting.distributions.call(0)
-        expect(actualDistribution[0]).to.be.equal('0x0')
-        expect(actualDistribution[1].toNumber()).to.be.equal(0)
+        let actualDistributionLength = await paymentsSplitting.distributionsLength()
+        expect(actualDistributionLength.toString()).to.be.equal('0')
         let sharesExponent = await paymentsSplitting.sharesExponent.call()
         expect(sharesExponent.toNumber()).to.be.equal(0)
       }).then(async (txn) => {
@@ -208,11 +201,11 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         {from: accounts[0], gasPrice: 1}
       )
 
-      var amountInWei = web3.toWei(amountToSendInEth)
+      var amountInWei = web3.utils.toWei(amountToSendInEth.toString())
       var initialBalance = await web3.eth.getBalance(paymentsSplitting.address)
       var initialDestinationBalances = {}
       for (var i = 0; i < destinationAddresses.length; i++) {
-        initialDestinationBalances[destinationAddresses[i]] = await web3.eth.getBalance(destinationAddresses[i])
+        initialDestinationBalances[destinationAddresses[i]] = new BigNumber(await web3.eth.getBalance(destinationAddresses[i]))
       }
       var txn = await paymentsSplitting.sendTransaction({from: accounts[0], gasPrice: 1, value: amountInWei})
       var actualBalance = await web3.eth.getBalance(paymentsSplitting.address)
@@ -227,7 +220,7 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
           .times(new BigNumber(destinationsMantissaOfShare[i]))
           .div((new BigNumber(10)).pow(sharesExponent + 2))
         expect(actualBalanceOfDestination.toString()).to.be.equal(
-          initialDestinationBalances[destinationAddresses[i]].plus(expectedSentAmount).toString()
+          initialDestinationBalances[destinationAddresses[i]].plus(expectedSentAmount).toString(10)
         )
 
         var event = new FundsOperationEvent(txn.logs[i + 1])
@@ -413,7 +406,7 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
         {from: accounts[0], gasPrice: 1}
       )
 
-      var amountInWei = web3.toWei(amountToSendInEth)
+      var amountInWei = web3.utils.toWei(amountToSendInEth.toString())
       var txnSendingDict = {from: accounts[0], gasPrice: 1, value: amountInWei}
       if(gas) {
         txnSendingDict["gas"] = gas

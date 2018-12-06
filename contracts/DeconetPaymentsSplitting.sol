@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity 0.4.25;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 
@@ -100,6 +100,14 @@ contract DeconetPaymentsSplitting {
             distribution.destination.transfer(amount);
             emit FundsOperation(distribution.destination, amount, FundsOperationType.Outgoing);
         }
+    }
+
+    /**
+     * @dev Returns length of distributions array
+     * @return Length of distributions array
+    */
+    function distributionsLength() public view returns (uint256) {
+        return distributions.length;
     }
 
 

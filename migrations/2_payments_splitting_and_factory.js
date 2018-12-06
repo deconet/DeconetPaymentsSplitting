@@ -1,16 +1,15 @@
 var DeconetPaymentsSplitting = artifacts.require('./DeconetPaymentsSplitting.sol')
 var DeconetPaymentsSplittingFactory = artifacts.require('./DeconetPaymentsSplittingFactory.sol')
 
-module.exports = (deployer) => {
+module.exports = async (deployer, network, accounts) => {
   let deconetPaymentsSplitting, deconetPaymentsSplittingFactory
 
   console.log('Deploying DeconetPaymentsSplitting contract.')
-  deployer.deploy(DeconetPaymentsSplitting).then(() => {
-    deconetPaymentsSplitting = DeconetPaymentsSplitting.at(DeconetPaymentsSplitting.address)
-    deployer.link(DeconetPaymentsSplitting, DeconetPaymentsSplittingFactory)
-    console.log('Deploying DeconetPaymentsSplittingFactory contract.')
-    return deployer.deploy(DeconetPaymentsSplittingFactory, deconetPaymentsSplitting.address)
-  }).then(() => {
-    deconetPaymentsSplittingFactory = DeconetPaymentsSplittingFactory.at(DeconetPaymentsSplittingFactory.address)
-  })
+  await deployer.deploy(DeconetPaymentsSplitting)
+  deconetPaymentsSplitting = await DeconetPaymentsSplitting.at(DeconetPaymentsSplitting.address)
+  deployer.link(DeconetPaymentsSplitting, DeconetPaymentsSplittingFactory)
+
+  console.log('Deploying DeconetPaymentsSplittingFactory contract.')
+  await deployer.deploy(DeconetPaymentsSplittingFactory, deconetPaymentsSplitting.address)
+  deconetPaymentsSplittingFactory = await DeconetPaymentsSplittingFactory.at(DeconetPaymentsSplittingFactory.address)
 }

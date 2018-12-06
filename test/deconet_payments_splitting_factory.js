@@ -85,7 +85,7 @@ contract("DeconetPaymentsSplittingFactory", async (accounts) => {
       {from: accounts[8], gasPrice: 1}
     )
     expect(newCloneTxn.logs[0].event).to.be.equal("PaymentsSplittingCreated")
-    let newClone = DeconetPaymentsSplitting.at(newCloneTxn.logs[0].args.newCloneAddress)
+    let newClone = await DeconetPaymentsSplitting.at(newCloneTxn.logs[0].args.newCloneAddress)
     let distributionDestination = await newClone.distributions.call(0)
     expect(distributionDestination[0]).to.be.equal(accounts[1])
     expect(distributionDestination[1].toNumber()).to.be.equal(100)
