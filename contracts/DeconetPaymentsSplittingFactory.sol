@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
 import "./DeconetPaymentsSplitting.sol";
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "@optionality.io/clone-factory/contracts/CloneFactory.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "../node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol";
 
 /**
  * @title Clone factory contract for DeconetPaymentsSplitting contract.
