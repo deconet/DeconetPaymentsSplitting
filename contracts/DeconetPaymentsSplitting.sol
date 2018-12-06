@@ -49,11 +49,7 @@ contract DeconetPaymentsSplitting {
      */
     function () public payable {
         emit FundsOperation(msg.sender, msg.value, FundsOperationType.Incoming);
-        // Distribution happens in a for loop and every iteration requires fixed 10990 of gas to perform
-        // distribution. Also, 1512 of gas is required to call `withdrawFullContractBalance` method and do
-        // some checks and preps in it.
-        // if (gasleft() < (10990 * distributions.length + 1512)) return;
-        withdrawFullContractBalance();
+        distributeFunds();
     }
 
     /**
@@ -78,21 +74,19 @@ contract DeconetPaymentsSplitting {
             sum += _sharesMantissa[i];
             distributions.push(Distribution(_destinations[i], _sharesMantissa[i]));
         }
-        require(sum == 10**(_sharesExponent + 2)); // taking into account 100% by adding 2 to the exponenta.
+        require(sum == 10**(_sharesExponent + 2)); // taking into account 100% by adding 2 to the exponent.
         sharesExponent = _sharesExponent;
         emit DistributionCreated(_destinations, _sharesMantissa, _sharesExponent);
     }
 
     /**
-     * @dev Process the available balance through the distribution and send money over to destination address.
+     * @dev Process the available balance through the distribution and send money over to destination addresses.
      */
-    function withdrawFullContractBalance() public {
-        uint distributionsCount = distributions.length;
-        // if (gasleft() < 10990 * distributionsCount) return;
+    function distributeFunds() public {
         uint balance = address(this).balance;
         uint exponent = sharesExponent;
         require(balance >= 10**(exponent + 2));
-        for (uint i = 0; i < distributionsCount; i++) {
+        for (uint i = 0; i < distributions.length; i++) {
             Distribution memory distribution = distributions[i];
             uint amount = calculatePayout(balance, distribution.mantissa, exponent);
             distribution.destination.transfer(amount);
