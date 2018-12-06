@@ -62,7 +62,7 @@ contract("DeconetPaymentsSplittingFactory", async (accounts) => {
   it("should fail to update library address with 0x0 contract address.", async () => {
     let factory = await DeconetPaymentsSplittingFactory.new(accounts[1], {from: accounts[0], gasPrice: 1})
     await factory.setLibraryAddress(
-      "0x0",
+      "0x0000000000000000000000000000000000000000",
       {from: accounts[0], gasPrice: 1}
     ).catch(async (err) => {
       assert.isOk(err, "Should throw exception here.")

@@ -390,6 +390,51 @@ contract("DeconetPaymentsSplitting", async (accounts) => {
     )
   })
 
+  it("should prevent a sharesExponent > 4", async () => {
+    var factoryContract = await DeconetPaymentsSplittingFactory.deployed()
+    var invalidDestinationAddress = factoryContract.address
+
+    let setUpDistributionAndCheckSuccess = async (
+      destinationAddresses,
+      destinationsMantissaOfShare,
+      sharesExponent,
+      shouldCreateException
+    ) => {
+      await paymentsSplitting.setUpDistribution(
+        destinationAddresses,
+        destinationsMantissaOfShare,
+        sharesExponent,
+        {from: accounts[0], gasPrice: 1}
+      ).catch(async (err) => {
+        if (!shouldCreateException) {
+          assert.fail("Unexpected exception.")
+        }
+        assert.isOk(err, "Expected exception.")
+      }).then(async (txn) => {
+        if(txn) {
+          if (shouldCreateException) {
+            assert.fail("Should have failed above.")
+          }
+        }
+      })
+
+      paymentsSplitting = await DeconetPaymentsSplitting.new({from: accounts[0], gasPrice: 1})
+    }
+
+    await setUpDistributionAndCheckSuccess(
+      [accounts[1], accounts[2], accounts[3], accounts[4]],
+      [390000, 330000, 215500, 64500],
+      4,
+      false
+    )
+    await setUpDistributionAndCheckSuccess(
+      [accounts[1], accounts[2], accounts[3], accounts[4]],
+      [3900000, 3300000, 2155000, 645000],
+      5,
+      true
+    )
+  })
+
   it("tests gas usage of distributions' transfers via fallback.", async () => {
     let setUpTopUpAndCheckState = async (
       destinationAddresses,
