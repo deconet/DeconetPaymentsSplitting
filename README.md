@@ -13,3 +13,7 @@ Every distribution is the DeconetPaymentsSplitting contract clone. It is immutab
 The main DeconetPaymentsSplitting contract can accept incoming funds and distribute between destinations right away from within the payable fallback method.
 
 The full contract balance gets distributed every time when new funds land.
+
+# Bug Bounty
+
+This contract is eligible for bounty rewards if you can find bugs or vulnerabilities in it.  Check out the full program info here: https://deco.network/bugbounty.html
