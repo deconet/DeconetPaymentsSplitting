@@ -1,7 +1,6 @@
 pragma solidity 0.4.25;
 
 import "./DeconetPaymentsSplitting.sol";
-import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "../node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol";
 
 /**
@@ -9,7 +8,7 @@ import "../node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol
  *
  * @dev Contract provide convenient way of deploying clones of DeconetPaymentsSplitting contract.
  */
-contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
+contract DeconetPaymentsSplittingFactory is CloneFactory {
 
     // PaymentsSplitting master-contract address.
     address public libraryAddress;
@@ -22,17 +21,6 @@ contract DeconetPaymentsSplittingFactory is Ownable, CloneFactory {
      * @param _libraryAddress PaymentsSplitting master-contract address.
      */
     constructor(address _libraryAddress) public {
-        libraryAddress = _libraryAddress;
-    }
-
-    /**
-     * @dev Updates library address with the given value.
-     * @param _libraryAddress Address of a new base contract.
-     */
-    function setLibraryAddress(address _libraryAddress) external onlyOwner {
-        require(libraryAddress != _libraryAddress);
-        require(_libraryAddress != address(0x0));
-
         libraryAddress = _libraryAddress;
     }
 
