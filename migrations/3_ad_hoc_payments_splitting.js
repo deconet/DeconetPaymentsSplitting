@@ -2,8 +2,15 @@ var DeconetAdHocPaymentsSplitting = artifacts.require('./DeconetAdHocPaymentsSpl
 
 module.exports = async (deployer, network, accounts) => {
 
-  console.log('Deploying DeconetAdHocPaymentsSplitting contract.')
-  await deployer.deploy(DeconetAdHocPaymentsSplitting)
+  let kyberNetworkInterface = ''
+  if (network == 'ropsten-fork' || network == 'ropsten'){
+    kyberNetworkInterface = '0x818E6FECD516Ecc3849DAf6845e3EC868087B755'
+  } else if (network == 'mainnet') {
+    kyberNetworkInterface = '0x818E6FECD516Ecc3849DAf6845e3EC868087B755'
+  }
+
+  console.log('Deploying DeconetAdHocPaymentsSplitting contract.  Network: ',network)
+  await deployer.deploy(DeconetAdHocPaymentsSplitting, kyberNetworkInterface)
   await DeconetAdHocPaymentsSplitting.at(DeconetAdHocPaymentsSplitting.address)
 
 

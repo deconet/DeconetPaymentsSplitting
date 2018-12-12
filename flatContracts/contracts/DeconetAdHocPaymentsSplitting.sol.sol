@@ -1,15 +1,85 @@
 pragma solidity 0.4.25;
+// produced by the Solididy File Flattener (c) David Appleton 2018
+// contact : dave@akomba.com
+// released under Apache 2.0 licence
+library SafeMath {
 
-import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
-import "./Kyber.sol";
+  /**
+  * @dev Multiplies two numbers, throws on overflow.
+  */
+  function mul(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+    // benefit is lost if 'b' is also tested.
+    // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+    if (_a == 0) {
+      return 0;
+    }
 
+    c = _a * _b;
+    assert(c / _a == _b);
+    return c;
+  }
 
-/**
- * @title Payments Splitting contract.
- *
- * @dev Contract for companies or groups of people who wants to accept Ethereum donations or payments and
- * distribution funds by preconfigured rules.
- */
+  /**
+  * @dev Integer division of two numbers, truncating the quotient.
+  */
+  function div(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    // assert(_b > 0); // Solidity automatically throws when dividing by 0
+    // uint256 c = _a / _b;
+    // assert(_a == _b * c + _a % _b); // There is no case in which this doesn't hold
+    return _a / _b;
+  }
+
+  /**
+  * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+  */
+  function sub(uint256 _a, uint256 _b) internal pure returns (uint256) {
+    assert(_b <= _a);
+    return _a - _b;
+  }
+
+  /**
+  * @dev Adds two numbers, throws on overflow.
+  */
+  function add(uint256 _a, uint256 _b) internal pure returns (uint256 c) {
+    c = _a + _b;
+    assert(c >= _a);
+    return c;
+  }
+}
+
+interface ERC20 {
+    function totalSupply() public view returns (uint supply);
+    function balanceOf(address _owner) public view returns (uint balance);
+    function transfer(address _to, uint _value) public returns (bool success);
+    function transferFrom(address _from, address _to, uint _value) public returns (bool success);
+    function approve(address _spender, uint _value) public returns (bool success);
+    function allowance(address _owner, address _spender) public view returns (uint remaining);
+    function decimals() public view returns(uint digits);
+    event Approval(address indexed _owner, address indexed _spender, uint _value);
+}
+
+/// @title Kyber Network interface
+interface KyberNetworkProxyInterface {
+    function maxGasPrice() public view returns(uint);
+    function getUserCapInWei(address user) public view returns(uint);
+    function getUserCapInTokenWei(address user, ERC20 token) public view returns(uint);
+    function enabled() public view returns(bool);
+    function info(bytes32 id) public view returns(uint);
+
+    function getExpectedRate(ERC20 src, ERC20 dest, uint srcQty) public view
+        returns (uint expectedRate, uint slippageRate);
+
+    function tradeWithHint(ERC20 src, uint srcAmount, ERC20 dest, address destAddress, uint maxDestAmount,
+        uint minConversionRate, address walletId, bytes hint) public payable returns(uint);
+}
+
+/// @title simple interface for Kyber Network
+interface SimpleNetworkInterface {
+    function swapTokenToToken(ERC20 src, uint srcAmount, ERC20 dest, uint minConversionRate) public returns(uint);
+    function swapEtherToToken(ERC20 token, uint minConversionRate) public payable returns(uint);
+    function swapTokenToEther(ERC20 token, uint srcAmount, uint minConversionRate) public returns(uint);
+}
 contract DeconetAdHocPaymentsSplitting {
     using SafeMath for uint;
 
@@ -139,3 +209,4 @@ contract DeconetAdHocPaymentsSplitting {
         return destAmount;
     }
 }
+

@@ -48,24 +48,6 @@ library SafeMath {
   }
 }
 
-contract CloneFactory {
-
-  event CloneCreated(address indexed target, address clone);
-
-  function createClone(address target) internal returns (address result) {
-    bytes memory clone = hex"3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3";
-    bytes20 targetBytes = bytes20(target);
-    for (uint i = 0; i < 20; i++) {
-      clone[20 + i] = targetBytes[i];
-    }
-    assembly {
-      let len := mload(clone)
-      let data := add(clone, 0x20)
-      result := create(0, data, len)
-    }
-  }
-}
-
 contract DeconetPaymentsSplitting {
     using SafeMath for uint;
 
@@ -192,44 +174,6 @@ contract DeconetPaymentsSplitting {
             size := extcodesize(_addr)
         }
         return (size > 0);
-    }
-}
-
-contract DeconetPaymentsSplittingFactory is CloneFactory {
-
-    // PaymentsSplitting master-contract address.
-    address public libraryAddress;
-
-    // Logged when a new PaymentsSplitting clone is deployed to the chain.
-    event PaymentsSplittingCreated(address newCloneAddress);
-
-    /**
-     * @dev Constructor for the contract.
-     * @param _libraryAddress PaymentsSplitting master-contract address.
-     */
-    constructor(address _libraryAddress) public {
-        libraryAddress = _libraryAddress;
-    }
-
-    /**
-     * @dev Create PaymentsSplitting clone.
-     * @param _destinations Destination addresses of the new PaymentsSplitting contract clone.
-     * @param _sharesMantissa Mantissa values for destinations shares ordered respectively with `_destinations`.
-     * @param _sharesExponent Exponent of a power term that forms shares floating-point numbers, expected to
-     * be the same for all values in `_sharesMantissa`.
-     */
-    function createPaymentsSplitting(
-        address[] _destinations,
-        uint[] _sharesMantissa,
-        uint _sharesExponent
-    )
-        external
-        returns(address)
-    {
-        address clone = createClone(libraryAddress);
-        DeconetPaymentsSplitting(clone).setUpDistribution(_destinations, _sharesMantissa, _sharesExponent);
-        emit PaymentsSplittingCreated(clone);
-        return clone;
     }
 }
 
