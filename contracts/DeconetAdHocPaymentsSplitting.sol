@@ -96,7 +96,7 @@ contract DeconetAdHocPaymentsSplitting {
                 sent = swapEtherToTokenAndTransfer(amount, outCurrency, destination);
             }
 
-            emit FundsOut(amount, destination, ETH_TOKEN_ADDRESS, sent, mantissa, _sharesExponent);
+            emit FundsOut(amount, destination, outCurrency, sent, mantissa, _sharesExponent);
 
             sum = sum.add(mantissa);
         }
