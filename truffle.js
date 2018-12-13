@@ -1,5 +1,5 @@
 var HDWalletProvider = require('truffle-hdwallet-provider')
-const LedgerWalletProvider = require('truffle-ledger-provider');
+const LedgerWalletProvider = require('@deconet/truffle-ledger-provider');
 
 // matching address is 0x648d692e5c507c233d0f9d9fea062429003b3144
 let mnemonic = process.env.DECONET_BLOCKCHAIN_ROPSTEN_MNEMONIC
@@ -26,6 +26,8 @@ module.exports = {
         // return new HDWalletProvider(mnemonic, 'http://127.0.0.1:8549')
         // remote GETH
         return new HDWalletProvider(mnemonic, process.env.DECONET_ROPSTEN_NODE_URL)
+        // ledger testing
+        // return new LedgerWalletProvider(ledgerOptions, "https://ropsten.infura.io/JTdaA5dJvlwfCfdgT5Cm")
       },
       network_id: 3,
       gas: 4700000

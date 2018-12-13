@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/deconet/DeconetPaymentsSplitting#readme",
   "dependencies": {
+    "@deconet/truffle-ledger-provider": "^0.0.4",
     "@optionality.io/clone-factory": "^0.1.6",
     "bignumber": "^1.1.0",
     "bignumber.js": "^7.2.1",
@@ -33,7 +34,6 @@
     "solc": "^0.4.25",
     "truffle-contract": "^3.0.4",
     "truffle-hdwallet-provider": "^1.0.0-web3one.1",
-    "truffle-ledger-provider": "../truffle-ledger-provider/",
     "uuid": "^3.2.1",
     "web3": "^1.0.0-beta.34"
   },
