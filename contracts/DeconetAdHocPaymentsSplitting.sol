@@ -18,9 +18,7 @@ contract DeconetAdHocPaymentsSplitting {
         uint amount,
         address destination,
         ERC20 token,
-        uint tokenAmount,
-        uint sharesMantissa,
-        uint sharesExponent
+        uint tokenAmount
     );
 
     // Logged when funds come in
@@ -40,7 +38,6 @@ contract DeconetAdHocPaymentsSplitting {
         kyberNetworkProxy = KyberNetworkProxyInterface(_kyberNetworkProxyAddress);
     }
 
-
     /**
      * @dev Disabled fallback payable function
      */
@@ -51,44 +48,46 @@ contract DeconetAdHocPaymentsSplitting {
     /**
      * @dev Send funds to destinations
      * @param _destinations Destination addresses of the current payment.
-     * @param _sharesMantissa Mantissa values for destinations shares ordered respectively with `_destinations`.
-     * @param _sharesExponent Exponent of a power term that forms shares floating-point numbers, expected to
-     * be the same for all values in `_sharesMantissa`.
-     * @param _memo A string memo
+     * @param _amounts Amounts for destinations ordered respectively with `_destinations`.
+     * @param _outCurrencies Output currencies for every destination and ordered respectively with `_destinations`.
+     * @param _memo A string memo.
      */
     function sendFunds(
         address[] _destinations,
-        uint[] _sharesMantissa,
+        uint[] _amounts,
         ERC20[] _outCurrencies,
-        uint _sharesExponent,
         string _memo
     )
-        public payable
+        public
+        payable
     {
-        require(_destinations.length <= 8 && _destinations.length > 0, "There is a maximum of 8 destinations allowed");  // max of 8 destinations
-        // prevent integer overflow when math with _sharesExponent happens
-        // also ensures that low balances can be distributed because balance must always be >= 10**(sharesExponent + 2)
-        require(_sharesExponent <= 4, "The maximum allowed sharesExponent is 4");
+        require(
+            _destinations.length <= 8 && _destinations.length > 0,
+            "There is a maximum of 8 destinations allowed"
+        );  // max of 8 destinations
         // ensure that lengths of arrays match so array out of bounds can't happen
-        require(_destinations.length == _sharesMantissa.length, "Length of destinations does not match length of sharesMantissa");
+        require(
+            _destinations.length == _amounts.length,
+            "Length of destinations does not match length of amounts"
+        );
         // ensure that lengths of arrays match so array out of bounds can't happen
-        require(_destinations.length == _outCurrencies.length, "Length of destinations does not match length of outCurrencies");
+        require(
+            _destinations.length == _outCurrencies.length,
+            "Length of destinations does not match length of outCurrencies"
+        );
 
         uint balance = msg.value;
-        require(balance >= 10**(_sharesExponent.add(2)), "You can not split up less wei than the sum of all shares");
         emit FundsIn(balance, _memo);
 
-        // ensure everything sums correctly to 100%
+        // ensure amounts sum correctly to `balance`.
         uint sum = 0;
 
         // loop over destinations and send out funds
         for (uint i = 0; i < _destinations.length; i++) {
             address destination = _destinations[i];
-            uint mantissa = _sharesMantissa[i];
             ERC20 outCurrency = _outCurrencies[i];
 
-            // calculate this user's share of ETH
-            uint amount = calculatePayout(balance, mantissa, _sharesExponent);
+            uint amount = _amounts[i];
             uint sent = amount;
             if (outCurrency == ETH_TOKEN_ADDRESS) {
                 destination.transfer(amount);
@@ -96,23 +95,11 @@ contract DeconetAdHocPaymentsSplitting {
                 sent = swapEtherToTokenAndTransfer(amount, outCurrency, destination);
             }
 
-            emit FundsOut(amount, destination, ETH_TOKEN_ADDRESS, sent, mantissa, _sharesExponent);
+            emit FundsOut(amount, destination, ETH_TOKEN_ADDRESS, sent);
 
-            sum = sum.add(mantissa);
+            sum = sum.add(amount);
         }
-        // taking into account 100% by adding 2 to the exponent.  Note that if this fails, the whole txn will revert and funds will be refunded.
-        require(sum == 10**(_sharesExponent.add(2)), "The sum of all sharesMantissa should equal 10 ** ( _sharesExponent + 2 ) but it does not");
-    }
-
-    /**
-     * @dev Calculates a share of the full amount.
-     * @param _fullAmount Full amount.
-     * @param _shareMantissa Mantissa of the percentage floating-point number.
-     * @param _shareExponent Exponent of the percentage floating-point number.
-     * @return An uint of the payout.
-     */
-    function calculatePayout(uint _fullAmount, uint _shareMantissa, uint _shareExponent) private pure returns(uint) {
-        return (_fullAmount.div(10 ** (_shareExponent.add(2)))).mul(_shareMantissa);
+        require(sum == balance, "The sum of all amounts should be equal balance but it does not");
     }
 
     //@dev assumed to be receiving ether wei
