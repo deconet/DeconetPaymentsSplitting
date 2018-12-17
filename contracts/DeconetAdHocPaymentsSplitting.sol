@@ -108,6 +108,7 @@ contract DeconetAdHocPaymentsSplitting {
     function swapEtherToTokenAndTransfer (uint256 amount, ERC20 token, address destAddress) internal returns (uint) {
         uint minRate;
         (, minRate) = kyberNetworkProxy.getExpectedRate(ETH_TOKEN_ADDRESS, token, amount);
+        require(minRate != 0, "The conversion rate returned by Kyber is 0 which means the Kyber swap will not be processed");
 
         bytes memory hint;
 
