@@ -2,9 +2,6 @@
 node_modules/*
 !node_modules/zeppelin-solidity
 
-# production
-build
-
 # coverage reports
 coverage
 coverage.json
