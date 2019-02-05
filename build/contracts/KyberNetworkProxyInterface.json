@@ -174,9 +174,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity 0.4.25;\n\ninterface ERC20 {\n    function totalSupply() public view returns (uint supply);\n    function balanceOf(address _owner) public view returns (uint balance);\n    function transfer(address _to, uint _value) public returns (bool success);\n    function transferFrom(address _from, address _to, uint _value) public returns (bool success);\n    function approve(address _spender, uint _value) public returns (bool success);\n    function allowance(address _owner, address _spender) public view returns (uint remaining);\n    function decimals() public view returns(uint digits);\n    event Approval(address indexed _owner, address indexed _spender, uint _value);\n}\n\n/// @title Kyber Network interface\ninterface KyberNetworkProxyInterface {\n    function maxGasPrice() public view returns(uint);\n    function getUserCapInWei(address user) public view returns(uint);\n    function getUserCapInTokenWei(address user, ERC20 token) public view returns(uint);\n    function enabled() public view returns(bool);\n    function info(bytes32 id) public view returns(uint);\n\n    function getExpectedRate(ERC20 src, ERC20 dest, uint srcQty) public view\n        returns (uint expectedRate, uint slippageRate);\n\n    function tradeWithHint(ERC20 src, uint srcAmount, ERC20 dest, address destAddress, uint maxDestAmount,\n        uint minConversionRate, address walletId, bytes hint) public payable returns(uint);\n}\n\n/// @title simple interface for Kyber Network\ninterface SimpleNetworkInterface {\n    function swapTokenToToken(ERC20 src, uint srcAmount, ERC20 dest, uint minConversionRate) public returns(uint);\n    function swapEtherToToken(ERC20 token, uint minConversionRate) public payable returns(uint);\n    function swapTokenToEther(ERC20 token, uint srcAmount, uint minConversionRate) public returns(uint);\n}",
-  "sourcePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/contracts/Kyber.sol",
+  "sourcePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/contracts/Kyber.sol",
   "ast": {
-    "absolutePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/contracts/Kyber.sol",
+    "absolutePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/contracts/Kyber.sol",
     "exportedSymbols": {
       "ERC20": [
         670
@@ -2245,7 +2245,7 @@
     "src": "0:1808:3"
   },
   "legacyAST": {
-    "absolutePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/contracts/Kyber.sol",
+    "absolutePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/contracts/Kyber.sol",
     "exportedSymbols": {
       "ERC20": [
         670
@@ -4318,8 +4318,8 @@
     "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.0",
-  "updatedAt": "2019-01-08T01:39:58.119Z",
+  "schemaVersion": "3.0.0-beta.2",
+  "updatedAt": "2019-01-08T22:57:43.405Z",
   "devdoc": {
     "methods": {},
     "title": "Kyber Network interface"

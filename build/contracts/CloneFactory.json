@@ -19,14 +19,14 @@
       "type": "event"
     }
   ],
-  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a723058202fe30173350b0e25951992b85185dfba34bca8ee2299a094415f472feb9daee50029",
-  "deployedBytecode": "0x6080604052600080fd00a165627a7a723058202fe30173350b0e25951992b85185dfba34bca8ee2299a094415f472feb9daee50029",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3006080604052600080fd00a165627a7a72305820b4d8fcc0b95b5965fa1fb49a396b550a03875c2b8f14e4af2525621d944d62820029",
+  "deployedBytecode": "0x6080604052600080fd00a165627a7a72305820b4d8fcc0b95b5965fa1fb49a396b550a03875c2b8f14e4af2525621d944d62820029",
   "sourceMap": "1192:555:5:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1192:555:5;;;;;;;",
   "deployedSourceMap": "1192:555:5:-;;;;;",
   "source": "pragma solidity ^0.4.23;\n\n/*\nThe MIT License (MIT)\n\nCopyright (c) 2018 Murray Software, LLC.\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n\"Software\"), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be included\nin all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS\nOR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n*/\n//solhint-disable max-line-length\n//solhint-disable no-inline-assembly\n\ncontract CloneFactory {\n\n  event CloneCreated(address indexed target, address clone);\n\n  function createClone(address target) internal returns (address result) {\n    bytes memory clone = hex\"3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3\";\n    bytes20 targetBytes = bytes20(target);\n    for (uint i = 0; i < 20; i++) {\n      clone[20 + i] = targetBytes[i];\n    }\n    assembly {\n      let len := mload(clone)\n      let data := add(clone, 0x20)\n      result := create(0, data, len)\n    }\n  }\n}\n",
-  "sourcePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
+  "sourcePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
   "ast": {
-    "absolutePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
+    "absolutePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
     "exportedSymbols": {
       "CloneFactory": [
         879
@@ -688,7 +688,7 @@
     "src": "0:1748:5"
   },
   "legacyAST": {
-    "absolutePath": "/Users/pavel/Developer/Deco/deconet_payments_splitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
+    "absolutePath": "/Users/chris/Documents/WorkStuff/Deconet/Blockchain/DeconetPaymentsSplitting/node_modules/@optionality.io/clone-factory/contracts/CloneFactory.sol",
     "exportedSymbols": {
       "CloneFactory": [
         879
@@ -1354,8 +1354,8 @@
     "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
   },
   "networks": {},
-  "schemaVersion": "3.0.0",
-  "updatedAt": "2019-01-08T01:39:58.115Z",
+  "schemaVersion": "3.0.0-beta.2",
+  "updatedAt": "2019-01-08T22:57:43.398Z",
   "devdoc": {
     "methods": {}
   },
